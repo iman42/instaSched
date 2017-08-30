@@ -8,11 +8,12 @@
                 <div class="panel-heading">Add Account</div>
                 <div class="panel-body">
                     @if (session('status'))
-                        <div class="alert alert-success">
+                        <div class="alert alert-danger">
                             {{ session('status') }}
                         </div>
                     @endif
-                    <form class="form-horizontal">
+                    <form class="form-horizontal" method="POST" action="{{ url('manage') }}">
+                      {{ csrf_field() }}
                       <div class="form-group">
                         <label for="username" class="col-sm-2 control-label">Username</label>
                         <div class="col-sm-10">
@@ -41,12 +42,20 @@
                             <tr>
                                 <td><strong>#</strong></td>
                                 <td><strong>Username</strong></td>
-                                <td><strong>Followers</strong><td>
+                                <!-- <td><strong>Followers</strong><td> -->
                                 <td><strong>Actions</strong></td>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- [TODO] -->
+                            <?php $count=1; ?>
+                            @foreach($user->accounts as $account)
+                                <tr>
+                                    <td>{{$count++}}</td>
+                                    <td>{{$account->username}}</td>
+                                    <!-- <td></td> -->
+                                    <td></td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

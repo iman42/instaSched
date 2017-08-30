@@ -19,3 +19,4 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/manage', 'AccountsController@index');
+Route::post('/manage', 'AccountsController@addAccount');
