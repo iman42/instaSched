@@ -30,6 +30,15 @@ class AccountsController extends Controller
             ->with('user', Auth::user());
     }
 
+    public function deleteAccount($id){
+        $account = Account::where('id', '=', $id)->first();
+        if(Auth::user()->id != $account->user){
+            return redirect('/');
+        }
+        $account->delete();
+        return redirect('/manage');
+    }
+
     public function addAccount(Request $request){
         $username = $request->username;
         $password = $request->password;
@@ -39,7 +48,7 @@ class AccountsController extends Controller
         $success = false;
         try {
             foreach(Account::all() as $ac){
-                if($username == $ac->username){
+                if(Auth::user()->id == $ac->user && $username == $ac->username){
                     $request->session()->flash('status', "You've already added this account.");
                     return redirect('/manage');
                 }
@@ -57,6 +66,9 @@ class AccountsController extends Controller
             $success = false;
             if(!$e->getMessage()){
                 $request->session()->flash('status', 'Something went wrong. Please make sure two factor authentication is disabled.');
+            }
+            elseif($e->getMessage() == 'InstagramAPI\Response\LoginResponse: checkpoint_required.'){
+                $request->session()->flash('status', "Error: Log in to this instagram account on your device, if problem persist contact us.");
             }
             else{
                 $request->session()->flash('status', 'Error: Something went wrong: '.$e->getMessage()."\n");

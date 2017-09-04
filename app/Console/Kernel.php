@@ -4,6 +4,8 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\DB;
+use \App\Account;
 
 class Kernel extends ConsoleKernel
 {
@@ -24,8 +26,21 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->call(function(){
+            $tasks = DB::table('tasks')->where('timestamp', '<=', time())->get();
+            foreach($tasks as $task){
+                $account = Account::where('id', '=', $task->account)->first();
+                $error = $account->uploadFile($task->filepath, $task->caption, true);
+                if($error){
+                    DB::table('tasks')->where('id', '=', $task->id)->update([
+                        'error' => $error,
+                    ]);
+                }
+                else{
+                    DB::table('tasks')->where('id', '=', $task->id)->delete();
+                }
+            }
+        })->name('the_sched_part')->everyMinute()->withoutOverlapping();
     }
 
     /**

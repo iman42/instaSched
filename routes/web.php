@@ -17,6 +17,9 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/manage', 'AccountsController@index');
 Route::post('/manage', 'AccountsController@addAccount');
+Route::get('/delete/account/{id}', 'AccountsController@deleteAccount');
+Route::get('/activities', 'ActivitiesController@index');
+Route::get('/activities/add', 'ActivitiesController@create');
+Route::post('/activities/add', 'ActivitiesController@store');

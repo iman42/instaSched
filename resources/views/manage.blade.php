@@ -53,7 +53,7 @@
                                     <td>{{$count++}}</td>
                                     <td>{{$account->username}}</td>
                                     <!-- <td></td> -->
-                                    <td></td>
+                                    <td><a class="btn btn-danger btn-xs" href="{{ url('/delete/account/' . $account->id ) }}" role="button">Remove</a></td>
                                 </tr>
                             @endforeach
                         </tbody>
