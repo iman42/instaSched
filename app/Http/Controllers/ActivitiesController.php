@@ -14,7 +14,7 @@ class ActivitiesController extends Controller
        $this->middleware('auth');
     }
     public function index(){
-        $tasks = DB::table('tasks')->get()->sortBy('timestamp');
+        $tasks = DB::table('tasks')->where('user', '=', Auth::user()->id)->get()->sortBy('timestamp');
         foreach($tasks as $task){
             $task->account_name = Account::where('id', '=', $task->account)->first()->username;
         }

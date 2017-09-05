@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use \InstagramAPI\Instagram;
+use Illuminate\Support\Facades\DB;
 
 class Account extends Model
 {
@@ -56,7 +57,9 @@ class Account extends Model
             return true;
         }
         if ($delete){
-            Storage::delete($filepath);
+            if(DB::table('tasks')->where('filepath', '=', $filepath)->count() == 0){
+                Storage::delete($filepath);
+            }
         }
         return false;
     }
