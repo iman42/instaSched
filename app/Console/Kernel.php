@@ -29,15 +29,19 @@ class Kernel extends ConsoleKernel
         $schedule->call(function(){
             $tasks = DB::table('tasks')->where('timestamp', '<=', time())->get();
             foreach($tasks as $task){
-                $account = Account::where('id', '=', $task->account)->first();
-                $error = $account->uploadFile($task->filepath, $task->caption, true);
-                if($error){
-                    DB::table('tasks')->where('id', '=', $task->id)->update([
-                        'error' => $error,
-                    ]);
+                if($task->error){
                 }
                 else{
-                    DB::table('tasks')->where('id', '=', $task->id)->delete();
+                    $account = Account::where('id', '=', $task->account)->first();
+                    $error = $account->uploadFile($task->filepath, $task->caption, true);
+                    if($error){
+                        DB::table('tasks')->where('id', '=', $task->id)->update([
+                            'error' => $error,
+                        ]);
+                    }
+                    else{
+                        DB::table('tasks')->where('id', '=', $task->id)->delete();
+                    }
                 }
             }
         })->name('the_sched_part')->everyMinute()->withoutOverlapping();
