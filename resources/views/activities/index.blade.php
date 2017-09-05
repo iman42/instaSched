@@ -43,7 +43,7 @@
                                         <td>{{ $task->caption }}</td>
                                         <td>{{ $task->account_name }}</td>
                                         <td><span class="utc_time">{{ $task->timestamp }}</span></td>
-                                        <td>{{ $task->error ? 'Yes. So many. It didn\'t work. Fuck you.' : '' }}</td>
+                                        <td>{{ $task->error }}</td>
                                         <td><a class="btn btn-danger btn-xs" href="{{ url('/delete/activity/' . $task->id ) }}" role="button">Remove</a></td>
                                     </tr>
                                 @endforeach
