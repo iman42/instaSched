@@ -26,9 +26,9 @@ class ActivitiesController extends Controller
             ->with('user', Auth::user());
     }
     public function store(Request $request){
-        $this->validate($request, [
-            'utc_time.*' => 'integer',
-        ]);
+        // $this->validate($request, [
+        //     'utc_time.*' => 'nullable|integer',
+        // ]);
         if(!$request->file('file')){
             $request->session()->flash('status', 'No file uploaded.');
             return redirect('/activities/add')->withInput();
@@ -47,7 +47,7 @@ class ActivitiesController extends Controller
                 $caption = $request->caption[$account_id];
                 $day = $request->day[$account_id];
                 $time = $request->utc_time[$account_id];
-                if($time < time() - 3600){
+                if(!is_numeric($time) || $time < time() - 3600){
                     $request->session()->flash('status', "Invalid time entered.");
                     return redirect('/activities/add')->withInput();
                 }
