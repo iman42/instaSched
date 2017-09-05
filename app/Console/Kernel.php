@@ -36,7 +36,7 @@ class Kernel extends ConsoleKernel
                     $error = $account->uploadFile($task->filepath, $task->caption, true);
                     if($error){
                         DB::table('tasks')->where('id', '=', $task->id)->update([
-                            'error' => $error,
+                            'error' => $error->getMessage(),
                         ]);
                     }
                     else{
