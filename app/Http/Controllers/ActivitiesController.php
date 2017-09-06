@@ -7,6 +7,7 @@ use \InstagramAPI\Instagram;
 use \App\Account;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ActivitiesController extends Controller
 {
@@ -74,6 +75,16 @@ class ActivitiesController extends Controller
                     $request->session()->flash('status', $string);
                 }
             }
+        }
+        return redirect('/activities');
+    }
+    public function delete($id){
+        if(Auth::user()->id == DB::table('tasks')->where('id', '=', $id)->first()->user){
+            $filepath = DB::table('tasks')->where('id', '=', $id)->first()->filepath;
+            if(DB::table('tasks')->where('filepath', '=', $filepath)->count() <= 1){
+                Storage::delete($filepath);
+            }
+            DB::table('tasks')->where('id', '=', $id)->delete();
         }
         return redirect('/activities');
     }
