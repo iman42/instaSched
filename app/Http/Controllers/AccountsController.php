@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use \InstagramAPI\Instagram;
 use \App\Account;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AccountsController extends Controller
 {
@@ -28,6 +29,25 @@ class AccountsController extends Controller
     {
         return view('manage')
             ->with('user', Auth::user());
+    }
+
+    public function keyindex(){
+        if(!Auth::user()->admin){
+            return redirect('/');
+        }
+        $keys = DB::table('registration_keys')->orderBy('id', 'DESC')->get();
+        return view('admin.index')
+            ->with('keys', $keys);
+    }
+    public function keycreate(){
+        if(!Auth::user()->admin){
+            return redirect('/');
+        }
+        $key = strtoupper(str_random(7));
+        DB::table('registration_keys')->insert([
+            'key' => $key,
+        ]);
+        return redirect('/admin/keys');
     }
 
     public function deleteAccount($id){

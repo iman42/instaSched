@@ -12,7 +12,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    
+
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
 </head>
@@ -43,6 +43,9 @@
                         @else
                             <li><a href="{{ url('activities') }}">Activities</a></li>
                             <li><a href="{{ url('manage') }}">Manage Accounts</a></li>
+                            @if(Auth::user()->admin)
+                                <li><a href="{{ url('/admin/keys') }}">Registration Keys</a></li>
+                            @endif
                         @endguest
                     </ul>
 

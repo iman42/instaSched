@@ -24,3 +24,5 @@ Route::get('/activities', 'ActivitiesController@index');
 Route::get('/activities/add', 'ActivitiesController@create');
 Route::post('/activities/add', 'ActivitiesController@store');
 Route::get('/delete/activity/{id}', 'ActivitiesController@delete');
+Route::get('/admin/keys', 'AccountsController@keyindex');
+Route::get('/admin/key/add', 'AccountsController@keycreate');
