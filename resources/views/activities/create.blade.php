@@ -23,7 +23,7 @@
                             </ul>
                         </div>
                     @endif
-                    <form action="{{ url('/activities/add') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ url('/activities/add/single') }}" method="POST" enctype="multipart/form-data">
                         {{ csrf_field() }}
                         <div class="col-xs-6">
                             <div class="form-group">
@@ -59,7 +59,7 @@
                                                   <label for="datetime_all">Time All &nbsp;
                                                       <span style="font-size:9px;" class="timezone_display"></span>
                                                   </label>
-                                                  <input class="form-control" type="text" id="datetime_all" placeholder="12/31/2020 11:50 pm" />
+                                                  <input autocomplete='off' class="form-control" type="text" id="datetime_all" placeholder="12/31/2020 11:50 pm" />
                                                 </div>
                                             </td>
                                             <!-- <td>
@@ -92,8 +92,8 @@
                                                 </td>
                                                 <td>
                                                     <div class="form-group">
-                                                      <input class="form-control datetime" type="text" name="datetime[{{ $account->id }}]" placeholder="12/31/2020 11:50 pm" value="{{ (is_array(old('datetime')) && array_key_exists($account->id, old('datetime'))) ? old('datetime')[$account->id] : '' }}"/>
-                                                      <input type="text" value="{{ (is_array(old('utc_time')) && array_key_exists($account->id, old('utc_time'))) ? old('utc_time')[$account->id] : '' }}" name="utc_time[{{$account->id}}]" style="display:none;" class="utc_time" />
+                                                      <input autocomplete='off' class="form-control datetime" type="text" name="datetime[{{ $account->id }}]" placeholder="12/31/2020 11:50 pm" value="{{ (is_array(old('datetime')) && array_key_exists($account->id, old('datetime'))) ? old('datetime')[$account->id] : '' }}"/>
+                                                      <input autocomplete='off' type="text" value="{{ (is_array(old('utc_time')) && array_key_exists($account->id, old('utc_time'))) ? old('utc_time')[$account->id] : '' }}" name="utc_time[{{$account->id}}]" style="display:none;" class="utc_time" />
                                                     </div>
                                                 </td>
                                                 <!-- <td>
@@ -118,6 +118,9 @@
     function populate_utc_time(obj, content){
         var target = $(obj).parent().children('.utc_time');
         var d = new Date(content);
+        if(content == "" || content == "now" || content == "OD RIGHT NOW"){
+            d = new Date();
+        }
         target.val(d.getTime()/1000);
     }
     // [BUG] $(document).on('input') might not trigger on selection of browser suggestion
@@ -147,6 +150,9 @@
             val = "+" + val;
         }
         $(".timezone_display").text(" (in UTC "+val+").");
+        $('.datetime').each(function(){
+            populate_utc_time($(this), "");
+        });
     });
 </script>
 

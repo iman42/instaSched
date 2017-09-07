@@ -17,6 +17,7 @@ class ActivitiesController extends Controller
     public function index(){
         $tasks = DB::table('tasks')->where('user', '=', Auth::user()->id)->get()->sortBy('timestamp');
         foreach($tasks as $task){
+            $task->is_video = (substr(Storage::getMimeType($task->filepath), 0, 5) == 'video');
             $task->account_name = Account::where('id', '=', $task->account)->first()->username;
         }
         return view('activities.index')
@@ -32,15 +33,15 @@ class ActivitiesController extends Controller
         // ]);
         if(!$request->file('file')){
             $request->session()->flash('status', 'No file uploaded.');
-            return redirect('/activities/add')->withInput();
+            return redirect('/activities/add/single')->withInput();
         }
         if(substr($request->file('file')->getMimeType(), 0, 5) != 'image' && substr($request->file('file')->getMimeType(), 0, 5) != 'video') {
             $request->session()->flash('status', 'File must be image or video.');
-            return redirect('/activities/add')->withInput();
+            return redirect('/activities/add/single')->withInput();
         }
         if(!$request->file('file')->isValid()){
             $request->session()->flash('status', 'Failed to upload file. Try again.');
-            return redirect('/activities/add')->withInput();
+            return redirect('/activities/add/single')->withInput();
         }
         $filepath = $request->file('file')->storeAs('userfiles/'.Auth::user()->id, time().rand(0,999).'.'.$request->file('file')->extension());
         if($request->has('enable')){
@@ -50,7 +51,7 @@ class ActivitiesController extends Controller
                 $time = $request->utc_time[$account_id];
                 if(!is_numeric($time) || $time < time() - 3600){
                     $request->session()->flash('status', "Invalid time entered.");
-                    return redirect('/activities/add')->withInput();
+                    return redirect('/activities/add/single')->withInput();
                 }
                 $account = Account::where('id', '=', $account_id)->first();
                 if(!$caption){
@@ -66,14 +67,6 @@ class ActivitiesController extends Controller
                     "created_at" => \Carbon\Carbon::now(),
                     "updated_at" => \Carbon\Carbon::now(),
                 ]);
-                $error = false;
-                if($error){
-                    $string = 'Something went wrong with account: '.$account->username;
-                    if($error->getMessage()){
-                        $string .= ' | Error: '.$error->getMessage();
-                    }
-                    $request->session()->flash('status', $string);
-                }
             }
         }
         return redirect('/activities');

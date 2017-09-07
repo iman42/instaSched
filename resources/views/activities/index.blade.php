@@ -5,9 +5,17 @@
     <div class="row">
         <div class="col-md-12">
             <center>
-                <a class="btn btn-primary btn-lg" href="{{ url('/activities/add') }}">
+                <a class="btn btn-primary btn-lg" href="{{ url('/activities/add/single') }}" style="margin-right:10px; margin-bottom:15px;">
                     <div class="col-xs-6" style="margin-top:13px;">
-                        Schedule Post
+                        Schedule Single Post
+                    </div>
+                    <div class="col-xs-6">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true" style="font-size:60px; float:right; margin-top:-10px"></span>
+                    </div>
+                </a>
+                <a class="btn btn-primary btn-lg" href="{{ url('/activities/add/multiple') }}" style="margin-left:10px; margin-bottom:15px;">
+                    <div class="col-xs-6" style="margin-top:13px;">
+                        Schedule Multiple Posts
                     </div>
                     <div class="col-xs-6">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true" style="font-size:60px; float:right; margin-top:-10px"></span>
@@ -15,7 +23,7 @@
                 </a>
             </center>
             <br />
-            <div class="panel panel-default">
+            <div class="panel panel-default" style="margin-top:-15px;">
                 <div class="panel-body">
                     @if (session('status'))
                         <div class="alert alert-success">
@@ -39,7 +47,14 @@
                             <tbody>
                                 @foreach($tasks as $task)
                                     <tr>
-                                        <td><img src="{{ asset('/storage/'.$task->filepath) }}" style="max-width:100px;"></img></td>
+                                        <td>
+                                            <a href="{{ asset('/storage/'.$task->filepath) }}" target="_BLANK">
+                                            @if($task->is_video)
+                                                Click here to view video.
+                                            @else
+                                                <img src="{{ asset('/storage/'.$task->filepath) }}" style="max-width:100px;"></img>
+                                            @endif
+                                        </td>
                                         <td>{{ $task->caption }}</td>
                                         <td>{{ $task->account_name }}</td>
                                         <td><span class="utc_time">{{ $task->timestamp }}</span></td>
