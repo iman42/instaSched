@@ -11,7 +11,7 @@
                 <div class="panel-body">
                     @if (session('status'))
                         <div class="alert alert-danger">
-                            {{ session('status') }}
+                            {!! session('status') !!}
                         </div>
                     @endif
                     @if ($errors->any())
