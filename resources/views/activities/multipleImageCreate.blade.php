@@ -23,30 +23,46 @@
                             </ul>
                         </div>
                     @endif
-                    <form action="{{ url('/activities/add/single') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ url('/activities/add/multiple') }}" method="POST" enctype="multipart/form-data">
                         {{ csrf_field() }}
                         <div class="col-xs-6">
                             <div class="form-group">
-                                <label for="file" style="font-weight:bold; font-size:20px;">File Input</label>
-                                <input type="file" id="file" name="file">
+                                <label for="file[]" style="font-weight:bold; font-size:20px;">Add Images</label>
+                                <input type="file" name="file[]" multiple="true">
                             </div>
                         </div>
                         <div class="col-xs-6">
-                            <button style="float:right;" type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" style="float:right;" class="btn btn-primary">Upload Images</button>
                         </div>
-                        <br />
+                    </form>
+                    <form action="{{ url('/activities/add/multiple/schedule') }}" method="POST">
+                        {{ csrf_field() }}
+                        <br /><br /><br />
+                        <hr />
+                        <div class="col-xs-12">
+                            <label style="font-weight:bold; font-size:20px;">Select Accounts:</label>
+                        </div>
+                        <div class="col-xs-12">
+                            @foreach($user->accounts as $account)
+                                <div class="col-xs-3">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input name="enabled[{{ $account->id }}]" type="checkbox"> {{$account->username}}
+                                        </label>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="col-xs-12">
+                            <hr />
+                        </div>
                         <div class="col-xs-12">
                             <div class="table-responsive">
                                 <table class="table table-striped" style="min-width:650px">
                                     <thead>
                                         <tr style="border-bottom:1.5px solid black;">
                                             <td>
-                                                <label class="checkbox-inline" style="margin-left:10px;">
-                                                  <input type="checkbox" id="enable_all" > <strong>Enable All</strong>
-                                                </label>
-                                            </td>
-                                            <td>
-                                                <strong>Account</strong>
+                                                <strong>Thumbnails</strong>
                                             </td>
                                             <td>
                                                 <div class="form-group">
@@ -62,51 +78,46 @@
                                                   <input autocomplete='off' class="form-control" type="text" id="datetime_all" placeholder="12/31/2020 11:50 pm" />
                                                 </div>
                                             </td>
-                                            <!-- <td>
-                                                <div class="form-group">
-                                                    <label for="time_all">Time All &nbsp;
-                                                        <span style="font-size:9px;" class="timezone_display"></span>
-                                                    </label>
-                                                    <input class="form-control" type="text" id="time_all" placeholder="11:50 pm" />
-                                                </div>
-                                            </td> -->
+                                            <td>
+                                            </td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($user->accounts as $account)
+                                        @foreach($files as $file)
+                                            <?php $key = base64_encode($file[0]); ?>
                                             <tr>
                                                 <td>
-                                                    <div class="checkbox" style="margin-left:10px; margin-top: 2px; margin-bottom: -6px;">
-                                                      <label>
-                                                        <input type="checkbox" class="enable" name="enable[{{$account->id}}]" value="{{ $account->id }}" aria-label="..." {{ (is_array(old('enable')) && in_array($account->id, old('enable'))) ? 'checked="true"' : '' }}>
-                                                      </label>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    {{$account->username}}
-                                                </td>
-                                                <td>
-                                                    <div class="form-group">
-                                                      <textarea class="form-control caption" rows="2" name="caption[{{$account->id}}]" style="resize:vertical;">{{ (is_array(old('caption')) && array_key_exists($account->id, old('caption'))) ? old('caption')[$account->id] : '' }}</textarea>
-                                                    </div>
+                                                    <a href="{{ asset('/storage/'.$file[0]) }}" target="_BLANK">
+                                                    @if($file[1])
+                                                        <?php
+                                                            $ar = explode('_', $file[0]);
+                                                            echo end($ar);
+                                                        ?>
+                                                    @else
+                                                        <img src="{{ asset('/storage/'.$file[0]) }}" style="max-width:100px;"></img>
+                                                    @endif
                                                 </td>
                                                 <td>
                                                     <div class="form-group">
-                                                      <input autocomplete='off' class="form-control datetime" type="text" name="datetime[{{ $account->id }}]" placeholder="12/31/2020 11:50 pm" value="{{ (is_array(old('datetime')) && array_key_exists($account->id, old('datetime'))) ? old('datetime')[$account->id] : '' }}"/>
-                                                      <input autocomplete='off' type="text" value="{{ (is_array(old('utc_time')) && array_key_exists($account->id, old('utc_time'))) ? old('utc_time')[$account->id] : '' }}" name="utc_time[{{$account->id}}]" style="display:none;" class="utc_time" />
+                                                      <textarea class="form-control caption" rows="2" name="caption[{{$key}}]" style="resize:vertical;">{{ (is_array(old('caption')) && array_key_exists($key, old('caption'))) ? old('caption')[$key] : '' }}</textarea>
                                                     </div>
                                                 </td>
-                                                <!-- <td>
+                                                <td>
                                                     <div class="form-group">
-                                                        <input class="form-control time" type="text" name="time[{{$account->id}}]" placeholder="11:50 pm" value="{{ (is_array(old('time')) && array_key_exists($account->id, old('time'))) ? old('time')[$account->id] : '' }}" />
+                                                      <input autocomplete='off' class="form-control datetime" type="text" name="datetime[{{ $key }}]" placeholder="12/31/2020 11:50 pm" value="{{ (is_array(old('datetime')) && array_key_exists($key, old('datetime'))) ? old('datetime')[$key] : '' }}"/>
+                                                      <input autocomplete='off' type="text" value="{{ (is_array(old('utc_time')) && array_key_exists($key, old('utc_time'))) ? old('utc_time')[$key] : '' }}" name="utc_time[{{$key}}]" style="display:none;" class="utc_time" />
                                                     </div>
-                                                </td> -->
+                                                </td>
+                                                <td>
+                                                    <a class="btn btn-danger btn-xs" href="{{ url('/activities/add/multiple/abortFile?file=').$key }}">Remove</a>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+                        <center><button type="submit" class="btn btn-danger">Schedule</button></center>
                     </form>
                 </div>
             </div>
