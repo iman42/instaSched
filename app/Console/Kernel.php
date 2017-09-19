@@ -37,6 +37,7 @@ class Kernel extends ConsoleKernel
                     if($error){
                         DB::table('tasks')->where('id', '=', $task->id)->update([
                             'error' => $error->getMessage(),
+                            // 'error' => $error,
                         ]);
                     }
                     else{

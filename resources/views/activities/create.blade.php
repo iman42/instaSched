@@ -117,8 +117,11 @@
 <script>
     function populate_utc_time(obj, content){
         var target = $(obj).parent().children('.utc_time');
+        content = content.toLowerCase();
+        content = content.replace('am', ' am');
+        content = content.replace('pm', ' pm');
         var d = new Date(content);
-        if(content == "" || content == "now" || content == "OD RIGHT NOW"){
+        if(content == "" || content == "now" || content == "od right now"){
             d = new Date();
         }
         target.val(d.getTime()/1000);

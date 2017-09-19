@@ -125,7 +125,9 @@ class ActivitiesController extends Controller
                     $request->session()->flash('status', "Invalid time entered.");
                     return redirect('/activities/add/single')->withInput();
                 }
-                $account = Account::where('id', '=', $account_id)->first();
+                $account = Account::where('id', '=', $account_id)
+                    ->where('user', '=', Auth::user()->id)
+                    ->first();
                 if(!$caption){
                     $caption = "";
                 }
@@ -190,10 +192,39 @@ class ActivitiesController extends Controller
         return redirect('/activities/add/multiple');
     }
     public function multipleImageSchedule(Request $request){
-        foreach($request->utc_time as $time){
-            
-
+        if(!$request->utc_time){
+            return redirect('/activities/add/multiple')->withInput();
         }
+        if(!$request->enabled){
+            return redirect('/activities/add/multiple')->withInput();
+        }
+        foreach($request->utc_time as $key => $time){
+            $file = base64_decode($key);
+            $caption = $request->caption[$key];
+            foreach($request->enabled as $account_id => $g){
+                if(!is_numeric($time) || $time < time() - 3600){
+                    $request->session()->flash('status', "Invalid time entered.");
+                    return redirect('/activities/add/multiple')->withInput();
+                }
+                $account = Account::where('id', '=', $account_id)
+                    ->where('user', '=', Auth::user()->id)
+                    ->first();
+                if(!$caption){
+                    $caption = "";
+                }
+                DB::table('tasks')->insert([
+                    'user' => Auth::user()->id,
+                    'filepath' => $file,
+                    'timestamp' => $time,
+                    'account' => $account->id,
+                    'caption' => $caption,
+                    'error' => "",
+                    "created_at" => \Carbon\Carbon::now(),
+                    "updated_at" => \Carbon\Carbon::now(),
+                ]);
+            }
+        }
+        return redirect('/activities');
     }
     public function delete($id){
         if(Auth::user()->id == DB::table('tasks')->where('id', '=', $id)->first()->user){
